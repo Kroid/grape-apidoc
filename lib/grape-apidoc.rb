@@ -58,6 +58,8 @@ module Grape
               }
               
               combined_apidoc_json
+              
+              send_file "combined_apidoc_json", :filename => @@mount_path, :type => 'Application/octet-stream'
             end
           end
 
