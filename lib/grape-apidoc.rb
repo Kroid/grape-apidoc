@@ -46,22 +46,19 @@ module Grape
 
           def self.setup
             @@mount_path = '/apidoc'
-            @base_url = '/api/v2'
-            
-            combined_apidoc_json = {
-              name: 'Agents',
-              api_version: '2',
-              base_url: @base_url,
-              resources: create_apis
-            }
-            
-            file = JSON.pretty_generate(combined_apidoc_json)
-            
-            get @@mount_path/:file do |file|
-              headers['Content-Disposition'] = "attachment"
+            get @@mount_path do
+              header['Access-Control-Allow-Origin']   = '*'
+              header['Access-Control-Request-Method'] = '*'
               
-              send_file(file)
+              combined_apidoc_json = {
+                api_path: '/public/agents/docs/v2',
+                name: 'Agents',
+                api_version: '2',
+                base_url: '/api/v2',
+                resources: create_apis
+              }
               
+              combined_apidoc_json
             end
           end
 
