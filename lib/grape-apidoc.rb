@@ -51,7 +51,6 @@ module Grape
               header['Access-Control-Request-Method'] = '*'
               
               combined_apidoc_json = {
-                api_path: '/public/agents/docs/v2',
                 name: 'Agents',
                 api_version: '2',
                 base_url: '/api/v2',
