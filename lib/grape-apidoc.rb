@@ -60,7 +60,7 @@ module Grape
               
               combined_apidoc_json
               
-              send_file "./#{@base_url}/apidoc.json", :filename => @@mount_path, :type => 'Application/octet-stream'
+              send_file "./#{@base_url}/#{file}", :filename => @@mount_path, :type => 'Application/octet-stream'
             end
           end
 
