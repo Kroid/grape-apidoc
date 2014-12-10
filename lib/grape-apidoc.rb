@@ -47,7 +47,7 @@ module Grape
           def self.setup
             @@mount_path = '/apidoc'
             @base_url = '/api/v2'
-            get @@mount_path do |file|
+            get @@mount_path do
               header['Access-Control-Allow-Origin']   = '*'
               header['Access-Control-Request-Method'] = '*'
               
@@ -60,7 +60,7 @@ module Grape
               
               combined_apidoc_json
               
-              send_file "./#{@base_url}/#{file}", :filename => @@mount_path, :type => 'Application/octet-stream'
+              send_file "./#{@base_url}/apidoc.json", :filename => @@mount_path, :type => 'Application/octet-stream'
             end
           end
 
