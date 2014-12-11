@@ -78,7 +78,8 @@ module Grape
             
                   operation = {
                     # path - необходимо запилить исключения для путей
-                    path: route.route_path.split(/^.*?#{route.route_prefix.to_s}/).last.match('\/([\w|-]*?)[\.\/\(]').captures.first,
+                    # path: route.route_path.split(/^.*?#{route.route_prefix.to_s}/).last.match('\/([\w|-]*?)[\.\/\(]').captures.first,
+                    path: route.route_path.gsub('(.:format)', '.json'),
                     method: route.route_method,
                     description: route.route_description || '',
                     headers: route.route_headers,
