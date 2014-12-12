@@ -51,15 +51,15 @@ module Grape
               header['Access-Control-Request-Method'] = '*'
               
               combined_apidoc_json = {
-                api_path: '/public/agents/docs/v2',
                 name: 'Agents',
-                api_version: '2',
-                base_url: '/api/v2',
+                apiVersion: '2',
+                baseUrl: '/api/v2',
                 resources: create_apis
               }
               
               combined_apidoc_json
             end
+            
           end
 
 
@@ -82,8 +82,9 @@ module Grape
                     path: route.route_path.gsub('(.:format)', '.json'),
                     method: route.route_method,
                     description: route.route_description || '',
-                    headers: route.route_headers,
-                    params: parse_params(route.route_params, route.route_path, route.route_method)
+                    headers: route.route_headers || [] ,
+                    params: parse_params(route.route_params, route.route_path, route.route_method),
+                    responseStatuses: parse_http_codes(route.route_http_codes)
                   }
             
                 end.compact
@@ -117,7 +118,7 @@ module Grape
               end
             
               non_nested_parent_params.map do |param, value|
-                value[:type] = 'File' if value.is_a?(Hash) && ['Rack::Multipart::UploadedFile', 'Hash'].include?(value[:type])
+                # value[:type] = 'File' if value.is_a?(Hash) && ['Rack::Multipart::UploadedFile', 'Hash'].include?(value[:type])
                 items = {}
             
                 raw_data_type = value.is_a?(Hash) ? (value[:type] || 'string').to_s : 'string'
@@ -130,6 +131,8 @@ module Grape
                                   'dateTime'
                                 when 'Numeric'
                                   'double'
+                                when 'Hash'
+                                  'Enum'
                                 end
                 description   = value.is_a?(Hash) ? value[:desc] || value[:description] : ''
                 required      = value.is_a?(Hash) ? !!value[:required] : false
@@ -147,8 +150,19 @@ module Grape
                 }
                 parsed_params.merge!(items: items) if items.present?
                 parsed_params.merge!(example: default_value) if default_value
-                parsed_params.merge!(enum: enum_values) if enum_values
+                parsed_params.merge!(options: enum_values) if enum_values
                 parsed_params
+              end
+            end
+            
+            def parse_http_codes(codes)
+              codes ||= {}
+              codes.map do |k, v|
+                http_code_hash = {
+                  code: k,
+                  message: v
+                }
+                http_code_hash
               end
             end
           end
