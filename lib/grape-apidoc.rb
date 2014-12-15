@@ -14,7 +14,8 @@ module Grape
             next if resource.empty?
             resource.downcase!
             @@combined_routes[resource] ||= []
-
+            _route_hidden = route.route_hidden
+            next if _route_hidden.present?
             @@combined_routes[resource] << route
           end
 
@@ -70,10 +71,12 @@ module Grape
               resources = []
               routes = @@combined_routes
               namespaces = @@combined_namespaces
-            
+              
               routes.each do |path, op_routes|
                 @description = nil
-            
+                
+                next if routes[path].all?(&:route_hidden)
+                
                 apis = op_routes.map do |route|
             
                   operation = {
@@ -84,7 +87,8 @@ module Grape
                     description: route.route_description || '',
                     headers: route.route_headers || [] ,
                     params: parse_params(route.route_params, route.route_path, route.route_method),
-                    responseStatuses: parse_http_codes(route.route_http_codes)
+                    responseStatuses: parse_http_codes(route.route_http_codes),
+                    errors: route.route_errors || []
                   }
             
                 end.compact
@@ -123,7 +127,9 @@ module Grape
             
                 raw_data_type = value.is_a?(Hash) ? (value[:type] || 'string').to_s : 'string'
                 data_type     = case raw_data_type
-                                when 'Boolean', 'Date', 'Integer', 'String'
+                                when 'Virtus::Attribute::Boolean'
+                                  'Boolean'
+                                when 'Date', 'Integer', 'String', 'File'
                                   raw_data_type
                                 when 'BigDecimal'
                                   'long'
