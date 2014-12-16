@@ -140,7 +140,8 @@ module Grape
                                 end
                 description   = value.is_a?(Hash) ? value[:desc] || value[:description] : ''
                 required      = value.is_a?(Hash) ? !!value[:required] : false
-                default_value = value.is_a?(Hash) ? value[:default] : nil
+                _example_value = value.is_a?(Hash) ? value[:documentation] : nil
+                example_value = _example_value[:example] if _example_value.present?
                 enum_values   = value.is_a?(Hash) ? value[:values] : nil
                 enum_values   = enum_values.call if enum_values && enum_values.is_a?(Proc)
             
@@ -153,7 +154,7 @@ module Grape
                   required:      required,
                 }
                 parsed_params.merge!(items: items) if items.present?
-                parsed_params.merge!(example: default_value) if default_value
+                parsed_params.merge!(example: example_value) if example_value
                 parsed_params.merge!(options: enum_values) if enum_values
                 parsed_params
               end
