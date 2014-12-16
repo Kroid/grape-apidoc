@@ -74,6 +74,7 @@ module Grape
               
               routes.each do |path, op_routes|
                 @description = nil
+                @order_num = nil
                 
                 next if routes[path].all?(&:route_hidden)
                 
@@ -94,6 +95,7 @@ module Grape
                 namespaces.each do |key, val|
                   if val.space === path && !val.options.empty?
                      @description = val.options[:desc]
+                     @order_num = val.options[:order_num]
                   else
                      next
                   end
@@ -103,6 +105,7 @@ module Grape
             
                 resources << {
                   name: path,
+                  order_num: @order_num,
                   description: description,
                   apis: apis
                 }
@@ -144,7 +147,7 @@ module Grape
                 example_value = _example_value[:example] if _example_value.present?
                 enum_values   = value.is_a?(Hash) ? value[:values] : nil
                 enum_values   = enum_values.call if enum_values && enum_values.is_a?(Proc)
-            
+                
                 name          = (value.is_a?(Hash) && value[:full_name]) || param
             
                 parsed_params = {
