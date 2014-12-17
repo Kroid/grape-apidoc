@@ -102,10 +102,11 @@ module Grape
                 end
             
                 description = @description || "Operations about #{path}"
-            
+                order_num = @order_num || nil
+                
                 resources << {
                   name: path,
-                  order_num: @order_num,
+                  order_num: order_num,
                   description: description,
                   apis: apis
                 }
